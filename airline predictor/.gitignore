@@ -1,0 +1,11 @@
+*.csv
+*.log
+*.txt
+*.xlsx
+*.pyc
+*.zip
+
+
+/train
+/val
+/models

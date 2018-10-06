@@ -23,7 +23,7 @@ INPUT_IMAGE_PATHS = os.listdir(INPUT_IMAGES_DIR)
 OUTPUT_IMAGES_DIR = 'output_images'
 
 
-INPUT_IMAGE_PATHS = ['Asiana2_B767_OZ.jpg']
+INPUT_IMAGE_PATHS = ['1718180.jpg']
 
 if __name__== "__main__":    
 

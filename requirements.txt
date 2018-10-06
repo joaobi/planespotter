@@ -1,0 +1,9 @@
+numpy
+pandas
+matplotlib
+Pillow
+flask
+tensorflow>=1.0.1
+
+
+

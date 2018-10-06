@@ -5,6 +5,10 @@ Created on Tue Oct  2 14:20:43 2018
 @author: joaobi
 """
 import warnings
+#import sys
+#sys.path.append("C:/projects/models/research/")
+#sys.path.append("C:/projects/models/research/object_detection")
+
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image, ExifTags
@@ -15,11 +19,9 @@ with warnings.catch_warnings():
 import os    
 import tensorflow as tf
 from object_detection.utils import ops as utils_ops
+#import ops as utils_ops
 from PIL import ImageDraw
 import PIL.ImageFont as ImageFont
-import sys
-sys.path.append("C:/projects/models/research/")
-sys.path.append("C:/projects/models/research/object_detection")
 import json
 
 PATH_TO_OUTPUT_DIR = 'output'
@@ -30,7 +32,7 @@ MODEL_DIR = 'models'
 # Prediction Model
 #
 predict_model_name = '6airlines_75epochs_200_3.h5'
-PREDICTO_MODEL = os.path.join(MODEL_DIR,predict_model_name)
+#PREDICT_MODEL = os.path.join(MODEL_DIR,predict_model_name)
 labels = {0: 'EK', 1: 'KE', 2: 'NH', 3: 'OZ', 4:'QF', 5:'SQ'}
 airline_names = {0: 'Emirates', 1: 'Korean Air', 2: 'ANA', 3: 'Asiana', 4:'Qantas', 5:'Singapore Airlines'}
 SIZE = 500 # Resize for better inference

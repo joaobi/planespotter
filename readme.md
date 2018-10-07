@@ -1,6 +1,8 @@
 # Plane Spotter
 Demo scenario for an App to detect planes in pictures and classify which airline they belong to.
 
+![Example pipeline](images/readme1.png)
+
 Currently supports:
 1. Emirates
 2. Singapore Airlines
@@ -9,13 +11,14 @@ Currently supports:
 5. Korean Airlines
 6. Qantas
 
+This repository includes all the code. For a simple demo version, head over to (TBA)
+
 Key use-case scenarios:
 * [Tensorflow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection) - The object (plane) detection API used. Used the standard MSCOCO image library
 * Custom airline classifier model using Kreas - included in code (images not included)
 
 The scenario includes the code for both client API and web/mobile clients.  
-
-
+![Example pipeline](images/readme2.png)
 
 ## Overview
 This demo includes:

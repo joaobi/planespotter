@@ -1,0 +1,83 @@
+swagger: "2.0"
+info:
+  description: This is the swagger file that goes with our server code
+  version: "1.0.0"
+  title: Swagger REST Article
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+basePath: "/api"
+
+# Paths supported by the server application
+paths:
+  /prediction:
+    get:
+      operationId: "prediction.read"
+      tags:
+        - "prediction"
+      summary: "The prediction data structure supported by the server application"
+      description: "Read the list of predictions"
+      responses:
+        200:
+          description: "Successful read prediction list operation"
+          schema:
+            type: "array"
+            items:
+              properties:
+                fname:
+                  type: "string"
+                lname:
+                  type: "string"
+                timestamp:
+                  type: "string"
+
+    post:
+      operationId: prediction.create
+      tags:
+        - prediction
+      summary: Create a prediction and add it to the prediction list
+      description: Create a new prediction in the prediction list
+      parameters:
+        - name: prediction
+          in: body
+          description: prediction to create
+          required: True
+          schema:
+            type: object
+            properties:
+              fname:
+                type: string
+                description: First name of person to create
+              lname:
+                type: string
+                description: Last name of person to create
+      responses:
+        201:
+          description: Successfully created person in list
+
+  /prediction/{prediction_name}:
+    get:
+      operationId: prediction.read_one
+      tags:
+        - prediction
+      summary: Read one prediction from the list of predictions alread made
+      description: Read prediction from the list of predictions
+      parameters:
+        - name: prediction_name
+          in: path
+          description: Name of the predictionn to get from the list
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully read preditcion from prediction list operation
+          schema:
+            properties:
+              fname:
+                type: string
+              lname:
+                type: string
+              timestamp:
+                type: string

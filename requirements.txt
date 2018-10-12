@@ -5,6 +5,7 @@ Pillow
 flask
 tensorflow==1.8.0
 h5py
+connexion
 
 
 

@@ -353,6 +353,7 @@ class planespotter:
 
     def save_metadata(self,dir_path=PATH_TO_OUTPUT_DIR):
         metadata = {}
+        metadata['filename'] = os.path.split(self.image_name)[-1]
         metadata['num_detections'] = self.output_dict['num_detections']
         metadata['planes_detected'] = len(self.plane_idxs[0])
         thresh_nparr = np.where(self.output_dict['detection_scores'][self.plane_idxs]>PLANE_DETECTION_THRESHOLD)[0]
@@ -360,6 +361,8 @@ class planespotter:
         metadata['planes_shown:'] = num_planes_thresh
         metadata['detection_boxes'] = self.output_dict['detection_boxes'][self.plane_idxs].tolist()
         metadata['detection_scores'] = self.output_dict['detection_scores'][self.plane_idxs].tolist()
-        json_data = json.dumps(metadata)
-        return json_data
+        
+        return metadata
+#        json_data = json.dumps(metadata)
+#        return json_data
        

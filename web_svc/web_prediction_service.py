@@ -11,6 +11,9 @@ import os
 #sys.path.append("c:/projects/airlinesdetection/libs")
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'../libs')))
 
+
+import json
+
 from planespotter import planespotter
 
 from flask import Flask, request, url_for, send_from_directory
@@ -18,6 +21,7 @@ from werkzeug import secure_filename
 
 MODEL_LOCATION = '../models'
 UPLOAD_FOLDER = 'uploads'
+OUTPUT_FOLDER = 'static'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 def allowed_file(filename):
@@ -27,14 +31,16 @@ def allowed_file(filename):
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
 
-def show_image_html(original_img,output_img):
+def show_image_html(original_img,output_img,json_pred):
        return '''
     <!doctype html>
     <title>Prediction Output</title>
     <h1>'''+output_img+'''</h1>
     <img src="'''+original_img+'''" alt="'''+original_img+'''" height="600" width="600">
     <img src="'''+output_img+'''" alt="'''+output_img+'''" height="600" width="600">
+    '''+json_pred+'''
     ''' 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -52,11 +58,24 @@ def upload_file():
             ps = planespotter(model_location=MODEL_LOCATION)
             ps.predict_image(image_dest)
             # Save Image
-            ps.save_image(dir_path='static')
+            ps.save_image(dir_path=app.config['OUTPUT_FOLDER'])
             
-            image_scored = os.path.join('static', filename)
+            image_scored = os.path.join(app.config['OUTPUT_FOLDER'], filename)
             
-            return show_image_html(image_dest,image_scored)
+            json_pred = ps.save_metadata(dir_path=image_dest)
+            
+#            json_pred = json_pred.replace('\\"',"\"")
+            
+            print(json_pred)
+            print(json.dumps(json_pred, indent=4))
+            
+            
+            json_filename = os.path.join(app.config['OUTPUT_FOLDER'], 
+                                         os.path.splitext(filename)[0]+'.json')
+            with open(json_filename, 'w') as outfile:
+                json.dump(json_pred, outfile)
+            
+            return show_image_html(image_dest,image_scored,json.dumps(json_pred))
 #            return url_for('uploaded_file',
 #                                    filename=filename)
     return '''

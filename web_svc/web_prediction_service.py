@@ -28,7 +28,6 @@ def allowed_file(filename):
   # this has changed from the original example because the original did not work for me
     return filename[-3:].lower() in ALLOWED_EXTENSIONS
 
-
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
@@ -82,10 +81,10 @@ def upload_file():
     <!doctype html>
     <title>Upload new File</title>
     <h1>Upload new File</h1>
-    <form action="" method=post enctype=multipart/form-data>
-      <p><input type=file name=file>
-         <input type=submit value=Upload>
-    </form>
+        <form action="" method=post enctype=multipart/form-data>
+        <p><input type=file name=file>
+            <input type=submit value=Upload>
+        </form>
     '''
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
@@ -94,7 +93,7 @@ def uploaded_file(filename):
 
 if __name__ == '__main__':
     print(os.path.abspath(os.path.join(os.path.dirname(__file__),'..')))
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
 
     
 #@app.route('/images', methods=['POST'])

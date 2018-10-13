@@ -26,6 +26,10 @@ def allowed_file(filename):
   # this has changed from the original example because the original did not work for me
     return filename[-3:].lower() in ALLOWED_EXTENSIONS
 
+app = Flask(__name__)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
 
 def show_image_html(original_img,output_img,json_pred):
        return '''

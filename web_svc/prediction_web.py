@@ -17,7 +17,7 @@ import requests
 from flask import Flask, request, url_for, send_from_directory, render_template
 from werkzeug import secure_filename
 
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = 'static/uploads'
 OUTPUT_FOLDER = 'static'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
@@ -78,12 +78,12 @@ def post():
         response = requests.post(url,data=data,headers=headers)
         print("REQUESTED A POST!")
         print(response.status_code)
-        # result = response.json()
+        result = response.json()
 
-        # print("RESULT>"+response)
+        print(response.json())
 
 
-    return render_template('main1.html')
+    return render_template('main1.html', pred = result)
 
         # return show_image_html(image_dest,image_scored,json.dumps(json_pred))    
 
@@ -96,7 +96,7 @@ def home():
     localhost:5000/
     :return:        the rendered template 'home.html'
     """
-    return render_template('main1.html')
+    return render_template('main1.html', pred = {})
 
 @app.route('/showAbout')
 def showSignUp():

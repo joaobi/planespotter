@@ -6,7 +6,7 @@ from planespotter import planespotter
 import json
 from flask import make_response, abort
 
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = 'static/uploads'
 OUTPUT_FOLDER = 'static'
 MODEL_LOCATION = '../models'
 

@@ -23,7 +23,7 @@ from flask import Flask, request, url_for, send_from_directory, render_template,
 from werkzeug import secure_filename
 
 MODEL_LOCATION = '../models'
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = 'static/uploads'
 OUTPUT_FOLDER = 'static'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
@@ -70,9 +70,10 @@ def create(filename):
         
         # print('######## DONE ')
         
-        return make_response(
-            "{image_name} successfully created".format(image_name=image_name), 201
-        )
+        return (json_pred)
+        # return make_response(
+        #     "{image_name} successfully created".format(image_name=image_name), 201
+        # )
     except:
         abort(
             406,

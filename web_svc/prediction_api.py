@@ -12,9 +12,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'../libs'
 import connexion
 import json
 
+import warnings
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore",category=FutureWarning)
+    from tensorflow.python.keras.models import load_model
+
 from planespotter import planespotter
 
-from flask import Flask, request, url_for, send_from_directory, render_template
+from flask import Flask, request, url_for, send_from_directory, render_template, make_response, abort
 from werkzeug import secure_filename
 
 MODEL_LOCATION = '../models'
@@ -22,10 +27,62 @@ UPLOAD_FOLDER = 'uploads'
 OUTPUT_FOLDER = 'static'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
+import config
+
+def create(filename):
+    # print(config.ps)
+    """
+    This function creates a new prediction
+    based on image (path) provided
+    :param filename:  path to the local filename being predicted
+    :return:        201 on success, 406 on prediction already exists
+    """
+    try:
+        # print('######## CALLED THE POST PREDICTION API')
+        # print("filename="+filename['filename'])
+
+        image_name = filename['filename']
+
+        # Init Prediction Object
+        # ps = planespotter(model_location=MODEL_LOCATION)    
+        # print('######## CREATED the PS OBJECT ')
+        source_img = os.path.join(UPLOAD_FOLDER, image_name)    
+
+        # print('Source image is at: '+ source_img)
+# 
+        # print(config.ps)
+        
+        # Predict image
+        config.ps.predict_image(source_img)
+        # print('######## CALLED PREDICT_IMAGE ')
+        # Save Image
+        config.ps.save_image(dir_path=OUTPUT_FOLDER)
+        # Save Metadata
+        json_pred = config.ps.save_metadata(dir_path=source_img)
+        
+        # print(json_pred)
+        print(json.dumps(json_pred, indent=4))
+        
+        json_filename = os.path.join(OUTPUT_FOLDER, 
+                                     os.path.splitext(image_name)[0]+'.json')
+        with open(json_filename, 'w') as outfile:
+            json.dump(json_pred, outfile)
+        
+        # print('######## DONE ')
+        
+        return make_response(
+            "{image_name} successfully created".format(image_name=image_name), 201
+        )
+    except:
+        abort(
+            406,
+            "Error creating {image_name}".format(image_name=image_name),
+        )
+
+
 def allowed_file(filename):
   # this has changed from the original example because the original did not work for me
     return filename[-3:].lower() in ALLOWED_EXTENSIONS
-
 
 def show_image_html(original_img,output_img,json_pred):
        return '''

@@ -34,7 +34,7 @@ paths:
                   type: "string"
 
     post:
-      operationId: prediction.create
+      operationId: prediction_api.create
       tags:
         - prediction
       summary: Create a prediction and add it to the prediction list

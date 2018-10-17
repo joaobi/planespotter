@@ -8,11 +8,11 @@ Created on Tue Oct  9 14:35:00 2018
 import sys
 import os
 #sys.path.append("c:/projects/airlinesdetection/libs")
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'../libs')))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'../libs')))
 import json
 import requests
 
-from planespotter import planespotter
+# from planespotter import planespotter
 
 from flask import Flask, request, url_for, send_from_directory, render_template
 from werkzeug import secure_filename
@@ -61,20 +61,29 @@ def post():
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-        
+        # response = requests.get('http://127.0.0.1:5000/api/prediction')
+        # geodata = response.json()
 
-        response = requests.get('http://127.0.0.1:5000/api/prediction')
-        geodata = response.json()
+        # print(geodata)
 
-        print(geodata)
+        url = 'http://127.0.0.1:5000/api/prediction'
+        # data =  json.dumps({'filename' : 'EK-1778749.jpg'})
+        data =  json.dumps({'filename' : filename})
+        headers={'content-type':'application/json', 'accept':'application/json'}
 
-        response = requests.post('http://127.0.0.1:5000/api/prediction', data = {'filename':'bla.jpg'})
-        result = response.json()
+        print("URL      >> "+url)
+        print("FILENAME >> "+filename)
+        print("DATA     >> "+data)
+        # response = requests.post('http://127.0.0.1:5000/api/prediction', data = {'filename':filename})
+        response = requests.post(url,data=data,headers=headers)
+        print("REQUESTED A POST!")
+        print(response.status_code)
+        # result = response.json()
 
-        print (result)
+        # print("RESULT>"+response)
 
 
-        return show_image_html(json.dumps(geodata))
+    return render_template('main1.html')
 
         # return show_image_html(image_dest,image_scored,json.dumps(json_pred))    
 

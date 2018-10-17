@@ -5,18 +5,24 @@ Created on Tue Oct  2 14:20:43 2018
 @author: joaobi
 """
 import warnings
-#import sys
+import os
+import sys
 #sys.path.append("C:/projects/models/research/")
 #sys.path.append("C:/projects/models/research/object_detection")
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'../libs')))
+
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore",category=FutureWarning)
+    from tensorflow.python.keras.models import load_model
 
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image, ExifTags
-with warnings.catch_warnings():
-    warnings.filterwarnings("ignore",category=FutureWarning)
-    from tensorflow.python.keras.models import load_model
-#import time
-import os    
+
+
+# import keras.backend as K
+
+#import time  
 import tensorflow as tf
 from object_detection.utils import ops as utils_ops
 #import ops as utils_ops
@@ -46,12 +52,17 @@ PLANE_DETECTION_THRESHOLD = 0.60 # Detect plans above this prob. threshold
 
 class planespotter:
     def __init__(self, model_location = MODEL_DIR):
+        # print('INIT')
         self._init_detector(detect_model_loc = 
                             os.path.join(model_location,PATH_TO_FROZEN_GRAPH))
+        # print('Loaded Detector')
         self._init_predictor(pred_model_location =
                              os.path.join(model_location,predict_model_name))
+        # print('Loaded Predictor')
+
 
     def  _init_detector(self, detect_model_loc):
+
         self.model_name = detect_model_loc
         
 #        print(self.model_name)
@@ -66,6 +77,7 @@ class planespotter:
         self.cropped_planes = []
         self.plane_idxs = []
         self.output_dict = []
+
         self.session = tf.Session(graph=self.detection_graph)     
  
         self.image_name = ''
@@ -73,10 +85,23 @@ class planespotter:
     def predict_image(self,image_name):
         # 1. Detect planes on the image
         self.detect_planes(image_name)
+        # print('Detected planes')
         # 2. Predict the airline of each plane
         self.predict_airline()
+        # print('Predicted Airline')
         # 3. Draw the bounding boxes for each plane with airline and prob.
         self.draw_custom_bounding_boxes()
+        # print('Drew BBs')
+
+        # 4. Clear to avoid errors
+        # tf.reset_default_graph() # for being sure
+        # K.clear_session()
+        # import gc
+        # gc.collect()
+        # print('CLOSING SESSION')
+        # self.session.close()
+        # tf.reset_default_graph()
+
        
     """
         Detect Planes and Crop them in the provided image
@@ -198,12 +223,11 @@ class planespotter:
         self.image_np =  np.array(final_image.getdata()).reshape(
                 (im_height, im_width, 3)).astype(np.uint8)
 
-
-
         
     def _run_inference_for_single_image(self,image, graph):
 #      step_time = time.time()
-      with self.detection_graph.as_default():
+        # global detection_graph
+        with self.detection_graph.as_default():
           sess = self.session
           # Get handles to input and output tensors
           ops = tf.get_default_graph().get_operations()
@@ -251,10 +275,12 @@ class planespotter:
           if 'detection_masks' in output_dict:
             output_dict['detection_masks'] = output_dict['detection_masks'][0]
 #          print("[.............Post Inference] --- %.2f seconds ---" % (time.time() - step_time)) 
-      return output_dict  
+        return output_dict  
 
     def _build_obj_detection_graph(self):
+        # global detection_graph
         detection_graph = tf.Graph()
+
         with detection_graph.as_default():
             od_graph_def = tf.GraphDef()
             with tf.gfile.GFile(self.model_name, 'rb') as fid:
@@ -289,13 +315,18 @@ class planespotter:
     # Prediction Methods
     #
     def _init_predictor(self,pred_model_location):
-        model = load_model(pred_model_location)
-        model.load_weights(pred_model_location)
-        self.model = model
-        self.preds = []
-        self.predicted_airline = []
-        self.predicted_prob = []
-    
+        try:
+            model = load_model(pred_model_location)
+            model.load_weights(pred_model_location)
+            model._make_predict_function()
+
+            self.model = model
+            self.preds = []
+            self.predicted_airline = []
+            self.predicted_prob = []
+        except Exception as e:
+            print("ERROR: _init_predictor "+ str(e))
+        
     def predict_airline(self):
         self.preds = []
         self.predicted_airline  = []
@@ -303,29 +334,33 @@ class planespotter:
         model = self.model
         img_array = self.cropped_planes
         
-        for img in img_array:
-            photo = img.resize((photo_size,photo_size), Image.ANTIALIAS)
-            x = np.array(photo)
-            x = x / 255.  
-            x = np.expand_dims(x, axis=0)
-            
-            preds = model.predict(x)
-        
-            if DEBUG:
-                predicted_airline = labels[np.argmax(preds[0])]
-                prob = np.max(preds[0])
-                plt.title('Airline '+predicted_airline+' with acc. '+ str(prob))
-                plt.imshow(photo)
-                plt.axis('off')
-                plt.show()        
+        try:
 
-            predicted_airline = airline_names[np.argmax(preds[0])]
-            prob = np.max(preds[0])*100
- 
-            self.preds.append(preds)
-            self.predicted_airline.append(predicted_airline)
-            self.predicted_prob.append(prob)
-       
+            for img in img_array:
+                photo = img.resize((photo_size,photo_size), Image.ANTIALIAS)
+                x = np.array(photo)
+                x = x / 255.  
+                x = np.expand_dims(x, axis=0)
+                
+                preds = model.predict(x)
+            
+                if DEBUG:
+                    predicted_airline = labels[np.argmax(preds[0])]
+                    prob = np.max(preds[0])
+                    plt.title('Airline '+predicted_airline+' with acc. '+ str(prob))
+                    plt.imshow(photo)
+                    plt.axis('off')
+                    plt.show()        
+
+                predicted_airline = airline_names[np.argmax(preds[0])]
+                prob = np.max(preds[0])*100
+    
+                self.preds.append(preds)
+                self.predicted_airline.append(predicted_airline)
+                self.predicted_prob.append(prob)
+        
+        except Exception as e:
+            print("[ERROR] [predict_airline]: "+ str(e))
 
     def print_stats(self):
         print("#objects detected: ",self.output_dict['num_detections'])

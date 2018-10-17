@@ -58,13 +58,13 @@ def create(filename):
     :return:        201 on success, 406 on prediction already exists
     """
     try:
-        print('######## CALLED THE POST PREDICTION API>>> filename='+filename['filename'])
+        print('######## CALLED THE POST PREDICTION API')
+        print("filename="+filename['filename'])
 
         image_name = filename['filename']
 
-
         # Init Prediction Object
-        ps = planespotter(model_location=MODEL_LOCATION)    
+        # ps = planespotter(model_location=MODEL_LOCATION)    
         print('######## CREATED the PS OBJECT ')
         source_img = os.path.join(UPLOAD_FOLDER, image_name)    
 

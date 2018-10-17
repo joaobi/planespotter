@@ -9,15 +9,14 @@ import sys
 import os
 #sys.path.append("c:/projects/airlinesdetection/libs")
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'../libs')))
-import connexion
 import json
+import requests
 
 from planespotter import planespotter
 
 from flask import Flask, request, url_for, send_from_directory, render_template
 from werkzeug import secure_filename
 
-MODEL_LOCATION = '../models'
 UPLOAD_FOLDER = 'uploads'
 OUTPUT_FOLDER = 'static'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -27,7 +26,6 @@ def allowed_file(filename):
     return filename[-3:].lower() in ALLOWED_EXTENSIONS
 
 app = Flask(__name__)
-
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
 
@@ -41,13 +39,15 @@ def show_image_html(original_img,output_img,json_pred):
     '''+json_pred+'''
     ''' 
 
-# Create the application instance
-app = connexion.App(__name__, specification_dir='./')
-
-# Read the swagger.yml file to configure the endpoints
-app.add_api('swagger.yml')
+def show_image_html(json_pred):
+       return '''
+    <!doctype html>
+    <title>Prediction Output</title>
+    '''+json_pred+'''
+    ''' 
 
 # Create a URL route in our application for "/"
+
 @app.route('/', methods=['POST'])
 def post():
     print('***************************')
@@ -60,31 +60,23 @@ def post():
         print('**found file', file.filename)
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        # for browser, add 'redirect' function on top of 'url_for'
+
         
-        # Predict image
-        image_dest = os.path.join(UPLOAD_FOLDER, filename)
-        ps = planespotter(model_location=MODEL_LOCATION)
-        ps.predict_image(image_dest)
-        # Save Image
-        ps.save_image(dir_path=app.config['OUTPUT_FOLDER'])
-        
-        image_scored = os.path.join(app.config['OUTPUT_FOLDER'], filename)
-        
-        json_pred = ps.save_metadata(dir_path=image_dest)
-        
-#            json_pred = json_pred.replace('\\"',"\"")
-        
-        print(json_pred)
-        print(json.dumps(json_pred, indent=4))
-        
-        
-        json_filename = os.path.join(app.config['OUTPUT_FOLDER'], 
-                                        os.path.splitext(filename)[0]+'.json')
-        with open(json_filename, 'w') as outfile:
-            json.dump(json_pred, outfile)
-        
-        return show_image_html(image_dest,image_scored,json.dumps(json_pred))    
+
+        response = requests.get('http://127.0.0.1:5000/api/prediction')
+        geodata = response.json()
+
+        print(geodata)
+
+        response = requests.post('http://127.0.0.1:5000/api/prediction', data = {'filename':'bla.jpg'})
+        result = response.json()
+
+        print (result)
+
+
+        return show_image_html(json.dumps(geodata))
+
+        # return show_image_html(image_dest,image_scored,json.dumps(json_pred))    
 
     # return render_template('about.html')
 
@@ -103,8 +95,16 @@ def showSignUp():
 
 @app.route('/showPredict')
 def showPredict():
-    return render_template('predict.html')
+
+    response = requests.get('http://127.0.0.1:5000/api/prediction')
+    data = response.json()
+
+    print(data)
+
+        # return show_image_html(json.dumps(geodata))
+
+    return render_template('predict.html',posts = data)
 
 # If we're running in stand alone mode, run the application
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)

@@ -20,16 +20,21 @@ def read():
     # Create the list of people from our data
     js = ''
     metadata = {}
+    result = []
     for file in os.listdir(OUTPUT_FOLDER):
         if os.path.splitext(file)[1] == '.json':
             
             with open(os.path.join(OUTPUT_FOLDER,file), 'r') as jsonfile:
                 js = json.load(jsonfile)
-                metadata[os.path.splitext(file)[0]] = js
-
-#                print(json.dumps(js, indent=2, sort_keys=True))
+                # metadata[os.path.splitext(file)[0]] = js
+                # metadata = {key: value for (key, value) in (metadata.items() + js.items())}
+                metadata.update(js)
+                result.append(js)
+                # print(json.dumps(js, indent=2, sort_keys=True))
     
-    return (metadata)
+    # print(result)
+
+    return (result)
 
 
 def read_one(prediction_name):
@@ -53,10 +58,17 @@ def create(filename):
     :return:        201 on success, 406 on prediction already exists
     """
     try:
+        print('######## CALLED THE POST PREDICTION API>>> filename='+filename['filename'])
+
+        image_name = filename['filename']
+
+
         # Init Prediction Object
         ps = planespotter(model_location=MODEL_LOCATION)    
-    
-        source_img = os.path.join(UPLOAD_FOLDER, filename)    
+        print('######## CREATED the PS OBJECT ')
+        source_img = os.path.join(UPLOAD_FOLDER, image_name)    
+
+        print('Source image is at: '+ source_img)
         
         # Predict image
         ps.predict_image(source_img)
@@ -69,15 +81,17 @@ def create(filename):
         print(json.dumps(json_pred, indent=4))
         
         json_filename = os.path.join(OUTPUT_FOLDER, 
-                                     os.path.splitext(filename)[0]+'.json')
+                                     os.path.splitext(image_name)[0]+'.json')
         with open(json_filename, 'w') as outfile:
             json.dump(json_pred, outfile)
         
+        print('######## DONE ')
+        
         return make_response(
-            "{filename} successfully created".format(filename=filename), 201
+            "{image_name} successfully created".format(image_name=image_name), 201
         )
     except:
         abort(
             406,
-            "Erroe creating {filename}".format(filename=filename),
+            "Error creating {image_name}".format(image_name=image_name),
         )

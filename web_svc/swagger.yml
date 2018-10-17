@@ -40,19 +40,16 @@ paths:
       summary: Create a prediction and add it to the prediction list
       description: Create a new prediction in the prediction list
       parameters:
-        - name: prediction
+        - name: filename
           in: body
           description: prediction to create
           required: True
           schema:
             type: object
             properties:
-              fname:
+              filename:
                 type: string
                 description: First name of person to create
-              lname:
-                type: string
-                description: Last name of person to create
       responses:
         201:
           description: Successfully created person in list

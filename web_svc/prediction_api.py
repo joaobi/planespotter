@@ -60,8 +60,10 @@ def create(filename):
         # Save Metadata
         json_pred = config.ps.save_metadata(dir_path=source_img)
         
-        # print(json_pred)
-        print(json.dumps(json_pred, indent=4))
+        print('>>>>>>>>>>>>>>>>>>>>> SAVED METADATA')
+        print(json_pred)
+        # print(json.dumps(json_pred, indent=4))
+        # config.ps.print_stats()
         
         json_filename = os.path.join(OUTPUT_FOLDER, 
                                      os.path.splitext(image_name)[0]+'.json')

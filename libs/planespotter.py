@@ -358,7 +358,8 @@ class planespotter:
                 self.preds.append(preds)
                 self.predicted_airline.append(predicted_airline)
                 self.predicted_prob.append(prob)
-        
+                # print(preds)
+
         except Exception as e:
             print("[ERROR] [predict_airline]: "+ str(e))
 
@@ -368,13 +369,18 @@ class planespotter:
         thresh_nparr = np.where(self.output_dict['detection_scores'][self.plane_idxs]>PLANE_DETECTION_THRESHOLD)[0]
         num_planes_thresh = len(thresh_nparr)
         print("#planes shown: ",str(num_planes_thresh))
+        # print(self.preds)
         for i in range(len(self.preds)):
-            score = self.output_dict['detection_scores'][i]
-            print("----->[Plane BBox %s]: %.2f%%"%(str(i),score))
-            for j,score in np.ndenumerate(np.sort(self.preds[i][0])[::-1]):
-                print('Probability %s => [%0.4f%%]' % (labels[j[0]]
-                        , score*100))                  
-              
+            # score = self.output_dict['detection_scores'][i]
+            # print("----->[Plane BBox %s]: %.2f%%"%(str(i),score))
+            # for j,score in np.ndenumerate(np.sort(self.preds[i][0])[::-1]):
+            #     print('Probability %s => [%0.4f%%]' % (labels[j[0]]
+            #             , score*100))                  
+            plane  = sorted(dict(zip(labels,self.preds[i][0])).items(),key=lambda kv: kv[1])[::-1]
+            for j,score in plane:
+                print('Probability %s => [%0.4f%%]' % (labels[j]
+                        , score))
+
     def print_image(self):
         IMAGE_SIZE = (12, 8)
         plt.figure(figsize=IMAGE_SIZE)
@@ -393,10 +399,43 @@ class planespotter:
         metadata['planes_detected'] = len(self.plane_idxs[0])
         thresh_nparr = np.where(self.output_dict['detection_scores'][self.plane_idxs]>PLANE_DETECTION_THRESHOLD)[0]
         num_planes_thresh = len(thresh_nparr)         
-        metadata['planes_shown:'] = num_planes_thresh
+        metadata['planes_shown'] = num_planes_thresh
         metadata['detection_boxes'] = self.output_dict['detection_boxes'][self.plane_idxs].tolist()
         metadata['detection_scores'] = self.output_dict['detection_scores'][self.plane_idxs].tolist()
-        
+
+        metadata['planes'] = []
+        for i in range(len(self.preds)):
+            name = 'plane_'+str(i)
+            tmp = {} 
+            plane  = sorted(dict(zip(labels,self.preds[i][0])).items(),key=lambda kv: kv[1])[::-1]
+            for j,score in plane:
+                print('Probability %s => [%0.4f%%]' % (labels[j]
+                        , score*100))
+                # tmp['Airline_'+str(j)] = labels[j]
+                # tmp['ProbAir_'+str(j)] = score*100
+                tmp[labels[j]] = score*100
+
+            # for j,score in np.ndenumerate(np.sort(self.preds[i][0])[::-1]):
+            #     print('Probability %s => [%0.4f%%]' % (labels[j[0]]
+            #             , score*100))
+            #     tmp['Airline_'+str(j[0])] = labels[j[0]]
+            #     tmp['ProbAir_'+str(j[0])] = score*100
+            print(tmp)
+            # metadata[name] = tmp
+            print(json.dumps(tmp))
+            # metadata['planes'].append({'Airline_0': 'EK', 'ProbAir_0': 0.8939682, 'Airline_4': 'QF', 'ProbAir_4': 0.09370398, 'Airline_3': 'OZ', 'ProbAir_3': 0.009453673, 'Airline_5': 'SQ', 'ProbAir_5': 0.0014314898, 'Airline_1': 'KE', 'ProbAir_1': 0.00076366, 'Airline_2': 'NH', 'ProbAir_2': 0.0006790766})
+            metadata['planes'].append(json.dumps(tmp))
+            
+            # print(metadata)
+            # print(json.dumps(metadata, indent=4))
+        # print(metadata)
+
+        metadata['predicted_airline'] = self.predicted_airline
+        metadata['predicted_prob'] = self.predicted_prob
+
+        print(metadata)
+        # print(json.dumps(metadata, indent=4))
+
         return metadata
 #        json_data = json.dumps(metadata)
 #        return json_data

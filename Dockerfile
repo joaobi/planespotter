@@ -1,6 +1,7 @@
 FROM ubuntu:latest as base
 LABEL author="Joao Bilhim"
 
+ADD start.sh planespotter/
 ADD apps planespotter/apps
 ADD libs planespotter/libs
 ADD models planespotter/models
@@ -26,5 +27,17 @@ RUN pip3 install -r planespotter/requirements.txt
 
 FROM base AS release
 COPY --from=dependencies . .
+
+EXPOSE 5001
+
+# CMD [ "prediction_api.py" ]
+
 #CMD [ "python3", "./train.py" ]
 
+ENTRYPOINT ["/bin/bash"]
+WORKDIR /planespotter
+CMD [ "start.sh" ]
+
+# ENTRYPOINT [ "python3" ]
+# WORKDIR /planespotter
+# CMD [ "python3 /planespotter/web_svc/prediction_api.py" ; "python3 /planespotter/web_svc/prediction_web.py" ]

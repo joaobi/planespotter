@@ -8,69 +8,150 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
-    <title>About</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type=text/javascript>
+
+			$(function() {
+			  $('button#btView').bind('click', function() {
+
+          var image = $(this).closest('#planeBox').children("img").attr("src");
+          $('#myModal').on('show.bs.modal', function () {
+            $(".img-responsive").attr("src", image);
+            $('#myModalLabel').text(image);
+          });
+
+        return true;
+			  });
+      });
+
+    $(document).ready(function () {
+    $('img').on('click', function () {
+        var image = $(this).attr('src');
+        $('#myModal').on('show.bs.modal', function () {
+            $(".img-responsive").attr("src", image);
+        });
+        $('#myModalLabel').text(image);
+    });
+    });
+
+		</script>
+
+    <title>Sample Predictions</title>
   </head>
   <body>
 
-        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-          <a class="navbar-brand" href="#">
-            <img src="/static/logow.png" width="45" height="25" alt="">
-          </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <a class="navbar-brand" href="#">
+        <img src="/static/logow.png" width="45" height="25" alt="">
+        Which Airline is that?
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+      
+        <span class="navbar-toggler-icon"></span>
+        
+      </button>
     
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    
-          <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item">
-                <a class="nav-link" href="/">Home</a>
-              </li>
-              <li class="nav-item active">
-                <a class="nav-link" href="showPredict">Sample Predictions</a>
-              </li>
-              <li class="nav-item">
-                    <a class="nav-link" href="showAbout">About<span class="sr-only">(current)</span></a>
-                  </li>              
-            </ul>
-          </div>
-        </nav>
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="showPredict">Sample Predictions</a>
+          </li>
+          <li class="nav-item">
+                <a class="nav-link" href="showAbout">About<span class="sr-only">(current)</span></a>
+          </li>              
+        </ul>
+      </div>
+    </nav>
     
         <main role="main">
     
           <!-- Main jumbotron for a primary marketing message or call to action -->
-          <div class="jumbotron">
+          <!-- <div class="jumbotron">
             <div class="container">About</h1>
               <p>Upload a picture and predict the airlines for the planes in the picture</p>
             </div>
+          </div> -->
+
+          <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+              <h1 class="display-4">Plane Gallery</h1>
+              <p class="lead">Browse through previously submitted images.</p>
+            </div>
           </div>
-    
-          <!--
-          {% for post in posts %}
-          <div><p>{{ post.filename }} </p></div>
-          {% endfor %}
-          -->
+<!-- 
+          <div class="container">About</h1>
+          <p>
+            ...
+            asdasdasdas
+          </p>
+          </div> -->
+          <!-- <div class="container">
+          <h1 class="mt-5">Sticky footer with fixed navbar</h1>
+          </div> -->
+
+
+          <div class="modal fade" id="myModal" role="dialog">
+              <div class="modal-dialog modal-lg modal-dialog-centered">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h4 class="modal-title" id="myModalLabel"></h4>
+                          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                        </div>
+                    
+                        <div class="modal-body align-items-center">
+                            <div class="container-fluid align-self-center">
+                                <div class="row">
+                                  <img id="imgView" class="img-responsive" src="" />
+                                </div>
+                            </div> 
+                        </div>
+                    <!-- <div class="btn-group">
+                      <button type="button" id="btClose" class="btn btn-sm btn-outline-secondary">Close</button>
+                    </div> -->
+                  </div>
+              </div>
+            </div>
 
           <div class="container">
-
 
                 <div class="row rounded col align-self-center">
 
                   {% for post in posts %}                  
                   <div class="col-md-4">
-                    <div class="card mb-4 box-shadow">
-                      <img class="card-img-top" src="static/{{ post.filename }}" alt="Card image cap" style="max-height: 120px;">
+                    <div class="card mb-4 box-shadow" id="planeBox">
+                      <img class="card-img-top" id="imgSmall" data-toggle="modal" data-target="#myModal"  src="static/{{ post.filename }}" alt="Card image cap">
                       <div class="card-body">
-                        <p class="card-text">Detected X plane(s) on the image. The airline(s) detected were: XXX (x%)</p>
+                        <p class="card-text">
+                          {% if post.planes_shown > 1 %}
+                          Picked {{ post.planes_shown}} planes on the image.
+                          The airlines detected were: 
+                           {% for airline in post.predicted_airline %}
+                            {{airline}}
+                            ({{ '%0.2f' % post.predicted_prob[loop.index-1]|float }}%) 
+                           {% endfor %} 
+                          {% else %}
+                          Picked {{ post.planes_shown}} plane on the image.
+                          The airline detected was {{ post.predicted_airline[0]}}
+                           ({{ '%0.2f' % post.predicted_prob[0]|float }}%)                       
+                          {% endif %}
+                          <!-- {{post}} -->
+                        </p>
+                        <!-- <p>
+                            Detected {{post.num_detections}} objects on this image of which {{post.planes_detected}} are planes.
+                        </p> -->
                         <div class="d-flex justify-content-between align-items-center">
                           <div class="btn-group">
-                            <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                            <button type="button" id="btView" data-toggle="modal" data-target="#myModal"  class="btn btn-sm btn-outline-secondary">View</button>
                           </div>
-                          <small class="text-muted">{{ post.planes_detected}} planes</small>
+                          <small class="text-muted">Detected {{ post.planes_shown}} planes</small>
                         </div>
                       </div>
                     </div>
                   </div>
+
                   {% endfor %} 
 
                 </div>

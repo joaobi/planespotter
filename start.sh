@@ -1,5 +1,12 @@
 #!/bin/sh
 
+#
+# Start sshd to enable remote debuging 
+cp /planespotter/sshd_config /etc/ssh/
+service ssh start
+
+export WERKZEUG_DEBUG_PIN=off
+
 # use application directory, regardless of WORKDIR defined by container
 # cd /usr/src/app
 cd /planespotter/web_svc/
@@ -20,6 +27,8 @@ status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start the Prediction API: $status"
   exit $status
+else
+  echo "[1/2] Started Prediction API"
 fi
 
 # Start the second process
@@ -28,4 +37,6 @@ status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start the Prediction WebServer: $status"
   exit $status
+else
+  echo "[2/2] Started Prediction WebServer"
 fi

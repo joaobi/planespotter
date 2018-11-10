@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: planespotter-web
+spec:
+  selector:
+    matchLabels:
+      app: planespotter-demo
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: planespotter-demo 
+    spec:
+      containers:
+      - name: planespotter-demo 
+        image: planespotter.azurecr.io/planespotter:latest 
+        ports:
+        - containerPort: 5001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: planespotter-web
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 5001
+  selector:
+    app: planespotter-demo 

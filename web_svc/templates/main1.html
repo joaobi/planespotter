@@ -56,7 +56,7 @@
         </nav>
     
         <main role="main">
-    
+            <br>
           <!-- Main jumbotron for a primary marketing message or call to action -->
           <div class="jumbotron">
             <div class="container">
@@ -87,8 +87,6 @@
 
 
           <div class="container">
-
-
               <div class="modal fade bs-example-modal-sm" id="myPleaseWait" tabindex="-1"
               role="dialog" aria-hidden="true" data-backdrop="static">
                 <div class="modal-dialog modal-sm modal-dialog-centered">
@@ -111,59 +109,34 @@
                 </div>
               </div>
 
-              {% if pred %}
+              <!-- Result of prediction -->
+            {% if pred %}
             <div class="row rounded col align-self-center">
               <div class="card w-100">
                 <img class="card-img-top" src="static/{{ pred.filename }}" alt="Card image cap">
                 <div class="card-body">
-                  <p class="card-text">{{pred}}</p>
+                  <p class="card-text">
+                    {% if pred.planes_shown > 1 %}
+                    Picked {{ pred.planes_shown}} planes on the image.
+                    The airlines detected were: 
+                     {% for airline in pred.predicted_airline %}
+                      {{airline}}
+                      ({{ '%0.2f' % pred.predicted_prob[loop.index-1]|float }}%) 
+                     {% endfor %} 
+                    {% else %}
+                    Picked {{ pred.planes_shown}} plane on the image.
+                    The airline detected was {{ pred.predicted_airline[0]}}
+                     ({{ '%0.2f' % pred.predicted_prob[0]|float }}%)                       
+                    {% endif %}
+                    <!-- {{post}} -->
+                  </p>
                 </div>
               </div>
-              <!--
-              <div class="card w-50">
-                  <img class="card-img-top" src="static/{{ pred.filename }}" alt="Card image cap">
-                  <div class="card-body">
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                  </div>
-                </div>            
-            </div>
-            -->
             {% endif %}
-<!--
-            <div class="jumbotron p-3 p-md-5 text-white rounded bg-dark col align-self-center">
-              <div class="col-md-6 px-0">
-                <h1 class="display-4 font-italic">Title of a longer featured blog post</h1>
-                <p class="lead my-3">Multiple lines of text that form the lede, informing new readers quickly and efficiently about what's most interesting in this post's contents.</p>
-                <p class="lead mb-0"><a href="#" class="text-white font-weight-bold">Continue reading...</a></p>
-              </div>
-            </div>
-  
-                <div class="row rounded col align-self-center">
-                  <div class="col-md-4">
-                    <div class="card mb-4 box-shadow">
-                      <img class="card-img-top" src="uploads/{{ pred.filename }}" alt="Card image cap">
-                      <div class="card-body">
-                        <p class="card-text">This is aasdasdsadasd wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                          <div class="btn-group">
-                            <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                          </div>
-                          <small class="text-muted">{{ pred.planes_detected}} planes</small>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-              <hr>
--->
 
-    
           </div> <!-- /container -->
     
         </main>
-    
-
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

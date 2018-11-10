@@ -49,6 +49,8 @@ photo_size = 200 # Size for loading into CNN
 # Path to frozen detection graph. This is the actual model that is used for the object detection.
 PATH_TO_FROZEN_GRAPH = 'frozen_inference_graph.pb'
 PLANE_DETECTION_THRESHOLD = 0.60 # Detect plans above this prob. threshold
+BB_COLOR = "blue"
+BB_TEXT_COLOR = "white"
 
 class planespotter:
     def __init__(self, model_location = MODEL_DIR):
@@ -174,15 +176,16 @@ class planespotter:
 
     def draw_custom_bounding_boxes(self):
         thickness = 1
-        color = 'blue'
+        color = BB_COLOR
         bbox = self.bbox
         
         airlines = self.predicted_airline
         probs = self.predicted_prob
         
         try:
-            font = ImageFont.truetype('arial.ttf', 9)
+            font = ImageFont.truetype('arial.ttf', 10)
         except IOError:
+            print('[ERROR] Could not load Font!!!')
             font = ImageFont.load_default()        
         
         final_image = Image.fromarray(self.image_np)
@@ -209,17 +212,22 @@ class planespotter:
             draw.rectangle(
                     [(left, text_bottom - text_height - 2 * margin), (left + text_width,
                                                           text_bottom)],
-                fill='blue')
+                fill=BB_COLOR)
             draw.text(
                     (left + margin, text_bottom - text_height - margin),
                     display_str,
-                    fill='black',
+                    fill=BB_TEXT_COLOR,
                     font=font)
             text_bottom -= text_height - 2 * margin
    
         (im_width, im_height) = final_image.size
         if final_image.format == 'PNG':
             final_image = final_image.convert('RGB')
+        
+        # final_image = final_image.resize((im_height, im_width), Image.ANTIALIAS)
+
+        # self.image_np =  np.array(final_image.getdata()).astype(np.uint8)
+
         self.image_np =  np.array(final_image.getdata()).reshape(
                 (im_height, im_width, 3)).astype(np.uint8)
 
@@ -367,7 +375,10 @@ class planespotter:
         print("#objects detected: ",self.output_dict['num_detections'])
         print("#planes detected: ",str(len(self.plane_idxs[0])))
         thresh_nparr = np.where(self.output_dict['detection_scores'][self.plane_idxs]>PLANE_DETECTION_THRESHOLD)[0]
-        num_planes_thresh = len(thresh_nparr)
+        if len(self.plane_idxs[0])> 0 and len(thresh_nparr) == 0 :
+            num_planes_thresh = 1
+        else:
+            num_planes_thresh = len(thresh_nparr)
         print("#planes shown: ",str(num_planes_thresh))
         # print(self.preds)
         for i in range(len(self.preds)):
@@ -398,7 +409,9 @@ class planespotter:
         metadata['num_detections'] = self.output_dict['num_detections']
         metadata['planes_detected'] = len(self.plane_idxs[0])
         thresh_nparr = np.where(self.output_dict['detection_scores'][self.plane_idxs]>PLANE_DETECTION_THRESHOLD)[0]
-        num_planes_thresh = len(thresh_nparr)         
+        num_planes_thresh = len(thresh_nparr)
+        if len(self.plane_idxs[0])> 0 and num_planes_thresh == 0 :
+            num_planes_thresh = 1
         metadata['planes_shown'] = num_planes_thresh
         metadata['detection_boxes'] = self.output_dict['detection_boxes'][self.plane_idxs].tolist()
         metadata['detection_scores'] = self.output_dict['detection_scores'][self.plane_idxs].tolist()

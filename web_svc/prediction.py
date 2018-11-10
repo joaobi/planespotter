@@ -10,14 +10,14 @@ UPLOAD_FOLDER = 'static/uploads'
 OUTPUT_FOLDER = 'static'
 MODEL_LOCATION = '../models'
 
+# prediction.read
 def read():
     """
-    This function responds to a request for /api/people
-    with the complete lists of people
+    This function responds to a request for /api/prediction
+    with the complete lists of predictions
 
-    :return:        sorted list of people
+    :return:        list of predictions
     """
-    # Create the list of people from our data
     js = ''
     metadata = {}
     result = []

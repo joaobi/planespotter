@@ -17,7 +17,8 @@
           var image = $(this).closest('#planeBox').children("img").attr("src");
           $('#myModal').on('show.bs.modal', function () {
             $(".img-responsive").attr("src", image);
-            $('#myModalLabel').text(image);
+            // $('#myModalLabel').text(image);
+            $('#myModalLabel').text('Predicted Image')
           });
 
         return true;
@@ -30,7 +31,8 @@
         $('#myModal').on('show.bs.modal', function () {
             $(".img-responsive").attr("src", image);
         });
-        $('#myModalLabel').text(image);
+        // $('#myModalLabel').text(image);
+        $('#myModalLabel').text('Predicted Image')
     });
     });
 
@@ -40,7 +42,7 @@
   </head>
   <body>
 
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">    
       <a class="navbar-brand" href="#">
         <img src="/static/logow.png" width="45" height="25" alt="">
         Which Airline is that?
@@ -67,30 +69,14 @@
     </nav>
     
         <main role="main">
-    
-          <!-- Main jumbotron for a primary marketing message or call to action -->
-          <!-- <div class="jumbotron">
-            <div class="container">About</h1>
-              <p>Upload a picture and predict the airlines for the planes in the picture</p>
-            </div>
-          </div> -->
 
           <div class="jumbotron jumbotron-fluid">
             <div class="container">
+              <br>
               <h1 class="display-4">Plane Gallery</h1>
               <p class="lead">Browse through previously submitted images.</p>
             </div>
           </div>
-<!-- 
-          <div class="container">About</h1>
-          <p>
-            ...
-            asdasdasdas
-          </p>
-          </div> -->
-          <!-- <div class="container">
-          <h1 class="mt-5">Sticky footer with fixed navbar</h1>
-          </div> -->
 
 
           <div class="modal fade" id="myModal" role="dialog">
@@ -108,9 +94,6 @@
                                 </div>
                             </div> 
                         </div>
-                    <!-- <div class="btn-group">
-                      <button type="button" id="btClose" class="btn btn-sm btn-outline-secondary">Close</button>
-                    </div> -->
                   </div>
               </div>
             </div>
@@ -119,7 +102,9 @@
 
                 <div class="row rounded col align-self-center">
 
-                  {% for post in posts %}                  
+                  {% for post in posts %}
+                  <!-- Only show the curated predictions (manually added) -->
+                  {% if post.curated %}            
                   <div class="col-md-4">
                     <div class="card mb-4 box-shadow" id="planeBox">
                       <img class="card-img-top" id="imgSmall" data-toggle="modal" data-target="#myModal"  src="static/{{ post.filename }}" alt="Card image cap">
@@ -137,6 +122,7 @@
                           The airline detected was {{ post.predicted_airline[0]}}
                            ({{ '%0.2f' % post.predicted_prob[0]|float }}%)                       
                           {% endif %}
+                          
                           <!-- {{post}} -->
                         </p>
                         <!-- <p>
@@ -149,9 +135,11 @@
                           <small class="text-muted">Detected {{ post.planes_shown}} planes</small>
                         </div>
                       </div>
+                      
                     </div>
-                  </div>
 
+                  </div>
+                  {% endif %}
                   {% endfor %} 
 
                 </div>

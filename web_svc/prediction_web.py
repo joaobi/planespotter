@@ -102,6 +102,8 @@ def home():
 def showSignUp():
     return render_template('about.html')
 
+# show the Page "Sample Predictions"
+# API call to "prediction.read"
 @app.route('/showPredict')
 def showPredict():
 

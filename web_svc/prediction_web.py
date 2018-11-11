@@ -23,7 +23,8 @@ ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 def allowed_file(filename):
   # this has changed from the original example because the original did not work for me
-    return filename[-3:].lower() in ALLOWED_EXTENSIONS
+    # return filename[-3:].lower() in ALLOWED_EXTENSIONS
+    return filename.split('.')[1].lower()  in ALLOWED_EXTENSIONS
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -81,6 +82,7 @@ def post():
         result = response.json()
 
         print(response.json())
+    else 
 
 
     return render_template('main1.html', pred = result)

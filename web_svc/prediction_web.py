@@ -82,8 +82,6 @@ def post():
         result = response.json()
 
         print(response.json())
-    else 
-
 
     return render_template('main1.html', pred = result)
 

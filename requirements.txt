@@ -1,4 +1,4 @@
-p numpy
+numpy
 pandas
 matplotlib
 Pillow

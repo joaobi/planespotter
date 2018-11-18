@@ -1,7 +1,9 @@
 # Plane Spotter
-Demo scenario for an App to detect planes in pictures and classify which airline they belong to.
+Demo scenario for an App to detect planes in pictures and classify which airline they belong to. For a simple demo version of the web interface, head over [here](http://planespotter-demo.azurewebsites.net)
 
-![Example pipeline](images/readme1.png)
+![Example pipeline](images/readme5.jpg) 
+![Example pipeline](images/readme3.png)  
+![Example pipeline](images/readme4.jpg)
 
 Currently supports:
 1. Emirates
@@ -11,21 +13,21 @@ Currently supports:
 5. Korean Airlines
 6. Qantas
 
-This repository includes all the code. For a simple demo version, head over to (TBA)
+
 
 Key use-case scenarios:
 * [Tensorflow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection) - The object (plane) detection API used. Used the standard MSCOCO image library
-* Custom airline classifier model using Kreas - included in code (images not included)
+* Custom airline classifier model built on Keras using the Tensorflow backend - included in code (images not included)
 
-The scenario includes the code for both client API and web/mobile clients.  
+The repo currently includes the code for the web client with additional clients (mobile, offline) to be added at a later time.  
 ![Example pipeline](images/readme2.png)
 
 ## Overview
 This demo includes:
-1. apps - mobile, web anc command line apps (both online and offline). Online talks to web_svc. Offline is self-contained.
+1. apps - TBA
 2. libs - shared libs (TF Object Detection API and PlaneSpotter core lib)
 3. models - object (plane) detection and airline classification models used by apps and API
-4. web_svc - OpenAPI webservice that detect/predicts plane/airline images
+4. web_svc - Web Interface and OpenAPI webservice that detect/predicts plane/airline images
 
 ## Getting Started
 

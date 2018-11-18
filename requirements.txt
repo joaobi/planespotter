@@ -1,9 +1,9 @@
-numpy
+p numpy
 pandas
 matplotlib
 Pillow
 flask
-tensorflow==1.8.0
+tensorflow==1.5
 h5py
 connexion
 

@@ -1,5 +1,5 @@
 # Plane Spotter
-Demo scenario for an App to detect planes in pictures and classify which airline they belong to. For a simple demo version of the web interface, head over [here](http://planespotter-demo.azurewebsites.net). There is also a Jupyter notebook step by step available [here](https://notebooks.azure.com/joaobi/libraries/planespotter/html/3.%20Plane%20Detection%20and%20Classification.ipynb).
+Demo scenario for an App to detect planes in pictures and classify which airline they belong to. For a simple demo version of the web interface, head over [here](http://planespotter-demo.azurewebsites.net). There is also a step by step Jupyter notebook available [here](https://notebooks.azure.com/joaobi/libraries/planespotter/html/3.%20Plane%20Detection%20and%20Classification.ipynb).
 
 ![Example pipeline](images/readme5.jpg) 
 ![Example pipeline](images/readme3.png)  
